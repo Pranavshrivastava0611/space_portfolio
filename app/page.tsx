@@ -1,65 +1,87 @@
-import Image from "next/image";
+"use client";
+
+import CanvasRoot from "@/components/CanvasRoot";
+import { planetsData } from "@/components/Planets/planets.data";
+import { useSpaceStore } from "@/lib/store";
 
 export default function Home() {
+  const { activePlanet, setLeaving } = useSpaceStore();
+  const currentPlanetData = planetsData.find(p => p.id === activePlanet);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="relative w-screen h-screen overflow-hidden bg-black">
+      {/* WebGL Scene */}
+      <CanvasRoot />
+
+      {/* UI Overlay */}
+      <div className="relative z-10 pointer-events-none w-full h-full flex flex-col justify-between p-8 md:p-12">
+        <header className="flex justify-between items-start">
+          <div className="flex flex-col gap-1 transition-transform duration-700 ease-out"
+            style={{ transform: activePlanet ? 'translateY(-20px)' : 'translateY(0)' }}>
+            <h1 className="text-2xl font-bold tracking-tighter font-outfit uppercase text-white">
+              Stellar <span className="text-purple-500">Portfolio</span>
+            </h1>
+            <p className="text-xs text-zinc-500 font-mono">EST. 2026 / MULTIVERSE-A1</p>
+          </div>
+
+          <nav className="pointer-events-auto flex gap-6 text-sm font-medium text-zinc-400">
+            <button className="hover:text-white transition-colors cursor-pointer">MISSION</button>
+            <button className="hover:text-white transition-colors cursor-pointer">SYSTEMS</button>
+            <button className="hover:text-white transition-colors cursor-pointer">SIGNAL</button>
+          </nav>
+        </header>
+
+        {/* Central UI for active planet */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className={`transition-all duration-1000 ease-in-out transform ${activePlanet ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-10'}`}>
+            {currentPlanetData && (
+              <div className="flex flex-col items-center gap-4 text-center">
+                <div className="text-[10px] font-mono text-purple-400 tracking-[0.3em] uppercase">
+                  Entering Gravity Well
+                </div>
+                <h2 className="text-6xl md:text-8xl font-black tracking-tighter uppercase text-white">
+                  {currentPlanetData.name}
+                </h2>
+                <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-purple-500 to-transparent" />
+                <p className="max-w-md text-sm text-zinc-400 font-medium leading-relaxed">
+                  Initializing holographic section interface. Synchronization at 84%.
+                </p>
+                <div className="flex gap-4">
+                  <button className="pointer-events-auto mt-4 px-8 py-3 bg-white text-black text-xs font-bold tracking-widest uppercase hover:bg-purple-500 hover:text-white transition-all transform hover:scale-105 active:scale-95">
+                    INITIALIZE BOOT
+                  </button>
+                  <button
+                    onClick={() => setLeaving(true)}
+                    className="pointer-events-auto mt-4 px-8 py-3 border border-white/20 text-white text-xs font-bold tracking-widest uppercase hover:bg-white/10 transition-all transform hover:scale-105 active:scale-95">
+                    RETURN TO VOID
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+
+        <footer className="flex justify-between items-end">
+          <div className="flex flex-col gap-1">
+            <div className={`flex items-center gap-2 transition-opacity duration-500 ${activePlanet ? 'opacity-50' : 'opacity-100'}`}>
+              <div className={`w-2 h-2 rounded-full animate-pulse ${activePlanet ? 'bg-purple-500' : 'bg-green-500'}`} />
+              <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest">
+                {activePlanet ? 'Cinematic Mode' : 'Gravity Stabilized'}
+              </span>
+            </div>
+            <p className="max-w-[150px] text-[10px] leading-relaxed text-zinc-500 font-mono uppercase">
+              {activePlanet ? 'Manual control disabled.' : 'Use mouse to drift. Approach planets to focus.'}
+            </p>
+          </div>
+
+          <div className="flex flex-col items-end gap-2 text-right">
+            <span className="text-xs font-mono text-purple-500">COORDINATES</span>
+            <span className="text-2xl font-bold font-mono tracking-tighter text-white">
+              {activePlanet ? 'LOCKED' : '40.7128° N, 74.0060° W'}
+            </span>
+          </div>
+        </footer>
+      </div>
+    </main>
   );
 }
